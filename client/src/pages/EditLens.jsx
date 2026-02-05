@@ -123,66 +123,36 @@ const EditLens = () => {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              SPH
-            </label>
-            <input
-              type="number"
-              step="0.25"
-              name="sph"
-              value={formData.sph}
-              onChange={handleChange}
-              placeholder="-20 to +20"
-              className="input-field"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              CYL
-            </label>
-            <input
-              type="number"
-              step="0.25"
-              name="cyl"
-              value={formData.cyl}
-              onChange={handleChange}
-              placeholder="-6 to +6"
-              className="input-field"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Axis
-            </label>
-            <input
-              type="number"
-              name="axis"
-              value={formData.axis}
-              onChange={handleChange}
-              placeholder="0 to 180"
-              min="0"
-              max="180"
-              className="input-field"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Addition
-            </label>
-            <input
-              type="number"
-              step="0.25"
-              name="addition"
-              value={formData.addition}
-              onChange={handleChange}
-              placeholder="+0.75 to +4"
-              className="input-field"
-            />
+        {/* Lens Specifications - Read Only */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+            Lens Specifications (Read Only)
+          </p>
+          <div className="grid grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">SPH</p>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                {formData.sph !== '' ? (formData.sph >= 0 ? `+${parseFloat(formData.sph).toFixed(2)}` : parseFloat(formData.sph).toFixed(2)) : '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">CYL</p>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                {formData.cyl !== '' ? (formData.cyl >= 0 ? `+${parseFloat(formData.cyl).toFixed(2)}` : parseFloat(formData.cyl).toFixed(2)) : '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">AXIS</p>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                {formData.axis !== '' ? `${formData.axis}°` : '-'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">ADD</p>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                {formData.addition !== '' ? `+${parseFloat(formData.addition).toFixed(2)}` : '-'}
+              </p>
+            </div>
           </div>
         </div>
 
