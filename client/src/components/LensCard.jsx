@@ -4,7 +4,7 @@ import { Package, Edit, Minus, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
 
-const LensCard = ({ lens, onQuantityChange }) => {
+const LensCard = ({ lens, onQuantityChange, hideBoxNumber = false }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [currentQuantity, setCurrentQuantity] = useState(lens.quantity);
@@ -56,12 +56,20 @@ const LensCard = ({ lens, onQuantityChange }) => {
   return (
     <div className="card p-4">
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-primary-600" />
-          <span className="font-semibold text-lg text-gray-900 dark:text-white">
-            {lens.boxNumber}
-          </span>
-        </div>
+        {!hideBoxNumber ? (
+          <div className="flex items-center gap-2">
+            <Package className="h-5 w-5 text-primary-600" />
+            <span className="font-semibold text-lg text-gray-900 dark:text-white">
+              {lens.boxNumber}
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Lens #{lens._id.slice(-6).toUpperCase()}
+            </span>
+          </div>
+        )}
         <button
           onClick={() => navigate(`/lens/${lens._id}/edit`)}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"

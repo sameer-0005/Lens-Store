@@ -1,49 +1,48 @@
 import { useState, useEffect } from 'react';
-import { Search as SearchIcon, Filter, ChevronDown, ChevronUp, Package } from 'lucide-react';
-import BoxCard from '../components/BoxCard';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Package, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import LensCard from '../components/LensCard';
 import Loader from '../components/Loader';
 import api from '../api/axios';
 
-const Search = () => {
+const BoxDetail = () => {
+  const { boxNumber } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
   const [lenses, setLenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   
-  // Filter states
-  const [boxNumber, setBoxNumber] = useState('');
-  const [sph, setSph] = useState('');
-  const [cyl, setCyl] = useState('');
-  const [axis, setAxis] = useState('');
-  const [addition, setAddition] = useState('');
-
-  // Track applied filters to pass to BoxDetail
-  const [appliedFilters, setAppliedFilters] = useState({});
+  // Initialize filters from URL params (passed from search page)
+  const [sph, setSph] = useState(searchParams.get('sph') || '');
+  const [cyl, setCyl] = useState(searchParams.get('cyl') || '');
+  const [axis, setAxis] = useState(searchParams.get('axis') || '');
+  const [addition, setAddition] = useState(searchParams.get('addition') || '');
 
   useEffect(() => {
     fetchLenses();
-  }, []);
+  }, [boxNumber]);
 
   const fetchLenses = async (filters = {}) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
+      params.append('boxNumber', decodeURIComponent(boxNumber));
       
-      if (filters.boxNumber) params.append('boxNumber', filters.boxNumber);
-      if (filters.sph) params.append('sph', filters.sph);
-      if (filters.cyl) params.append('cyl', filters.cyl);
-      if (filters.axis) params.append('axis', filters.axis);
-      if (filters.addition) params.append('addition', filters.addition);
+      // Use passed filters or current state
+      const currentSph = filters.sph !== undefined ? filters.sph : sph;
+      const currentCyl = filters.cyl !== undefined ? filters.cyl : cyl;
+      const currentAxis = filters.axis !== undefined ? filters.axis : axis;
+      const currentAddition = filters.addition !== undefined ? filters.addition : addition;
+      
+      if (currentSph) params.append('sph', currentSph);
+      if (currentCyl) params.append('cyl', currentCyl);
+      if (currentAxis) params.append('axis', currentAxis);
+      if (currentAddition) params.append('addition', currentAddition);
       
       const res = await api.get(`/lens?${params.toString()}`);
       setLenses(res.data);
-      
-      // Store applied filters (excluding boxNumber for passing to BoxDetail)
-      setAppliedFilters({
-        sph: filters.sph || '',
-        cyl: filters.cyl || '',
-        axis: filters.axis || '',
-        addition: filters.addition || ''
-      });
     } catch (error) {
       console.error('Failed to fetch lenses:', error);
     } finally {
@@ -51,78 +50,66 @@ const Search = () => {
     }
   };
 
-  const handleSearch = (e) => {
+  const handleFilter = (e) => {
     e.preventDefault();
-    fetchLenses({ boxNumber, sph, cyl, axis, addition });
-  };
-
-  const handleQuickSearch = (e) => {
-    e.preventDefault();
-    fetchLenses({ boxNumber, sph, cyl, axis, addition });
+    fetchLenses({ sph, cyl, axis, addition });
   };
 
   const clearFilters = () => {
-    setBoxNumber('');
     setSph('');
     setCyl('');
     setAxis('');
     setAddition('');
-    fetchLenses();
+    fetchLenses({ sph: '', cyl: '', axis: '', addition: '' });
   };
 
-  // Group lenses by box number
-  const groupedByBox = lenses.reduce((acc, lens) => {
-    const box = lens.boxNumber;
-    if (!acc[box]) {
-      acc[box] = [];
-    }
-    acc[box].push(lens);
-    return acc;
-  }, {});
+  const handleQuantityChange = (id, newQuantity) => {
+    setLenses(lenses.map(lens => 
+      lens._id === id ? { ...lens, quantity: newQuantity } : lens
+    ));
+  };
 
-  const boxEntries = Object.entries(groupedByBox).sort((a, b) => 
-    a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' })
-  );
+  // Calculate total quantity in this box
+  const totalQuantity = lenses.reduce((sum, lens) => sum + lens.quantity, 0);
 
   return (
     <div className="page-container px-4 pt-6 pb-24">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Search Lenses
-      </h1>
-
-      {/* Quick Search */}
-      <form onSubmit={handleQuickSearch} className="mb-4">
-        <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            value={boxNumber}
-            onChange={(e) => setBoxNumber(e.target.value)}
-            placeholder="Search by box number..."
-            className="input-field pl-10 pr-20"
-          />
-          <button
-            type="submit"
-            className="absolute right-2 top-1/2 -translate-y-1/2 btn-primary py-1.5 px-3 text-sm"
-          >
-            Search
-          </button>
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-2">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+        </button>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+            <Package className="h-6 w-6 text-primary-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Box {decodeURIComponent(boxNumber)}
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {lenses.length} lens type{lenses.length !== 1 ? 's' : ''} • {totalQuantity} total items
+            </p>
+          </div>
         </div>
-      </form>
+      </div>
 
       {/* Advanced Filters Toggle */}
       <button
         onClick={() => setShowFilters(!showFilters)}
-        className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-medium mb-4"
+        className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-medium my-4"
       >
         <Filter className="h-4 w-4" />
-        Advanced Filters
+        Filter within this box
         {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
       </button>
 
-      {/* Advanced Filters */}
+      {/* Advanced Filters - NO box number field */}
       {showFilters && (
-        <form onSubmit={handleSearch} className="card p-4 mb-6">
+        <form onSubmit={handleFilter} className="card p-4 mb-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -189,32 +176,29 @@ const Search = () => {
 
       {/* Results */}
       {loading ? (
-        <Loader text="Searching..." />
+        <Loader text="Loading lenses..." />
       ) : (
         <>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            {boxEntries.length} box{boxEntries.length !== 1 ? 'es' : ''} found 
-            <span className="text-gray-400 dark:text-gray-500 ml-1">
-              ({lenses.length} total lenses)
-            </span>
+            Showing {lenses.length} lens type{lenses.length !== 1 ? 's' : ''}
           </p>
           
-          {boxEntries.length === 0 ? (
+          {lenses.length === 0 ? (
             <div className="text-center py-12">
               <Package className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No boxes found</p>
+              <p className="text-gray-500 dark:text-gray-400">No lenses found in this box</p>
               <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                Try adjusting your search filters
+                Try adjusting your filters
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {boxEntries.map(([box, boxLenses]) => (
-                <BoxCard 
-                  key={box} 
-                  boxNumber={box} 
-                  lensCount={boxLenses.length}
-                  filters={appliedFilters}
+            <div className="space-y-4">
+              {lenses.map(lens => (
+                <LensCard 
+                  key={lens._id} 
+                  lens={lens} 
+                  onQuantityChange={handleQuantityChange}
+                  hideBoxNumber={true}
                 />
               ))}
             </div>
@@ -225,4 +209,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default BoxDetail;

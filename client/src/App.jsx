@@ -11,6 +11,7 @@ import AddLens from './pages/AddLens';
 import EditLens from './pages/EditLens';
 import Import from './pages/Import';
 import Settings from './pages/Settings';
+import BoxDetail from './pages/BoxDetail';
 
 const App = () => {
   const { user } = useAuth();
@@ -57,6 +58,12 @@ const App = () => {
         <Route path="/import" element={
           <ProtectedRoute>
             <Import />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/box/:boxNumber" element={
+          <ProtectedRoute>
+            <BoxDetail />
           </ProtectedRoute>
         } />
         
