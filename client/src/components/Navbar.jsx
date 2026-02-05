@@ -11,7 +11,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-14">
           <Link to="/" className="flex items-center gap-2">
             <Glasses className="h-6 w-6 text-primary-600" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Lens Store</span>
+            <span className="font-bold text-lg text-gray-900 dark:text-white">India Opticals</span>
           </Link>
           
           <button
