@@ -1,6 +1,6 @@
 {
-  "appId": "com.lensstore.app",
-  "appName": "Lens Store",
+  "appId": "com.indiaopticals.app",
+  "appName": "INDIA OPTICALS",
   "webDir": "dist",
   "server": {
     "androidScheme": "https"

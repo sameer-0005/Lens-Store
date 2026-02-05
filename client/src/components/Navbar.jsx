@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Moon, Sun, Glasses } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
@@ -10,8 +10,12 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           <Link to="/" className="flex items-center gap-2">
-            <Glasses className="h-6 w-6 text-primary-600" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">India Opticals</span>
+            <img
+              src="/store_logo.jpeg"
+              alt="India Opticals"
+              className="h-10 w-auto rounded"
+            />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">INDIA OPTICALS</span>
           </Link>
           
           <button

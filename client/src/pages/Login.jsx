@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Glasses, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
@@ -37,11 +37,13 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-full">
-              <Glasses className="h-10 w-10 text-primary-600" />
-            </div>
+            <img
+              src="/store_logo.jpeg"
+              alt="India Opticals"
+              className="h-24 w-auto rounded-lg shadow-lg"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">India Opticals</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">INDIA OPTICALS</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to manage inventory</p>
         </div>
 

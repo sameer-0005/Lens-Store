@@ -1,4 +1,4 @@
-package com.lensstore.app;
+package com.indiaopticals.app;
 
 import com.getcapacitor.BridgeActivity;
 

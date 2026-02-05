@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.lensstore.app"
+    namespace "com.indiaopticals.app"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.lensstore.app"
+        applicationId "com.indiaopticals.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -20,6 +20,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Custom APK name
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "IndiaOpticals.apk"
         }
     }
 }
