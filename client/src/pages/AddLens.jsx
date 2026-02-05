@@ -47,7 +47,16 @@ const AddLens = () => {
       } else {
         toast.success('New lens added successfully');
       }
-      navigate('/search');
+
+      // Clear all fields except boxNumber to allow quick entry of multiple lenses
+      setFormData(prev => ({
+        boxNumber: prev.boxNumber,  // Keep box number
+        sph: '',
+        cyl: '',
+        axis: '',
+        addition: '',
+        quantity: ''
+      }));
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to add lens');
     } finally {
