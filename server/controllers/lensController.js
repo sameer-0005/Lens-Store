@@ -94,7 +94,7 @@ const getLens = async (req, res) => {
   }
 };
 
-// @desc    Create new lens
+// @desc    Create new lens (or update quantity if duplicate)
 // @route   POST /api/lens
 // @access  Private
 const createLens = async (req, res) => {
@@ -109,16 +109,45 @@ const createLens = async (req, res) => {
       return res.status(400).json({ message: 'Quantity is required' });
     }
     
-    const lens = await Lens.create({
-      sph: sph !== undefined && sph !== '' ? parseFloat(sph) : null,
-      cyl: cyl !== undefined && cyl !== '' ? parseFloat(cyl) : null,
-      axis: axis !== undefined && axis !== '' ? parseInt(axis) : null,
-      addition: addition !== undefined && addition !== '' ? parseFloat(addition) : null,
-      boxNumber,
-      quantity: parseInt(quantity)
+    // Parse values
+    const parsedSph = sph !== undefined && sph !== '' ? parseFloat(sph) : null;
+    const parsedCyl = cyl !== undefined && cyl !== '' ? parseFloat(cyl) : null;
+    const parsedAxis = axis !== undefined && axis !== '' ? parseInt(axis) : null;
+    const parsedAddition = addition !== undefined && addition !== '' ? parseFloat(addition) : null;
+    const parsedQuantity = parseInt(quantity);
+    
+    // Check for existing lens with same specs + box number
+    const existingLens = await Lens.findOne({
+      sph: parsedSph,
+      cyl: parsedCyl,
+      axis: parsedAxis,
+      addition: parsedAddition,
+      boxNumber: boxNumber
     });
     
-    res.status(201).json(lens);
+    if (existingLens) {
+      // Update quantity of existing lens
+      existingLens.quantity += parsedQuantity;
+      await existingLens.save();
+
+      return res.status(200).json({
+        ...existingLens.toObject(),
+        message: `Quantity updated. Added ${parsedQuantity} to existing stock.`,
+        updated: true
+      });
+    }
+    
+    // Create new lens if no duplicate found
+    const lens = await Lens.create({
+      sph: parsedSph,
+      cyl: parsedCyl,
+      axis: parsedAxis,
+      addition: parsedAddition,
+      boxNumber,
+      quantity: parsedQuantity
+    });
+    
+    res.status(201).json({ ...lens.toObject(), updated: false });
   } catch (error) {
     console.error('Create lens error:', error);
     if (error.name === 'ValidationError') {

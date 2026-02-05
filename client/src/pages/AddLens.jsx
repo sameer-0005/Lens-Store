@@ -37,11 +37,16 @@ const AddLens = () => {
 
     setLoading(true);
     try {
-      await api.post('/lens', {
+      const res = await api.post('/lens', {
         ...formData,
         quantity: parseInt(formData.quantity)
       });
-      toast.success('Lens added successfully');
+
+      if (res.data.updated) {
+        toast.success(res.data.message || 'Quantity added to existing lens');
+      } else {
+        toast.success('New lens added successfully');
+      }
       navigate('/search');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to add lens');
