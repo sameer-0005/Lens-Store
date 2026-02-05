@@ -1,0 +1,11 @@
+{
+  "appId": "com.lensstore.app",
+  "appName": "Lens Store",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
